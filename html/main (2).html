@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CU MARKETPLACE | CHANDIGARH UNIVERSITY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+      <link rel="icon" href="cu.png" type="image/png">
+    <style>
+        /* Existing styles */
+
+        @keyframes glowing {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes silver-flow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            position: relative;
+        }
+
+        .header {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            margin: 20px 0 0 0;
+            color: #fff;
+            animation: glowing 2s infinite;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .stats div {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            margin: 0 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .stats div:hover {
+            transform: scale(1.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .nav button {
+            margin: 0 20px;
+            padding: 15px 30px;
+            cursor: pointer;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            transition: background 0.3s ease, transform 0.3s ease;
+            font-size: 16px;
+        }
+
+        .nav button:hover {
+            background: #6e8efb;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .footer {
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #a777e3;
+        }
+
+        .background {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            z-index: -1;
+        }
+
+        .about {
+            margin: 40px 20px;
+            padding: 50px 0;
+            background: rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .about h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #fff;
+            transition: font-size 0.3s ease;
+        }
+
+        .about p {
+            font-size: 1.2rem;
+            color: #ccc;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .about.active h2 {
+            font-size: 3rem;
+        }
+
+        .about.active p {
+            opacity: 1;
+        }
+
+        /* New styles for profile button and profile window */
+
+        .profile-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            border: none;
+            border-radius: 50%;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-button img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .profile-button span {
+            margin-right: 10px;
+            font-size: 1rem;
+            color: #fff;
+            display: inline-block;
+        }
+
+        .profile-button:hover::after {
+
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .profile-button:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-window {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: #444;
+            border-radius: 10px;
+            width: 200px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-window button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #1a1a1a;
+            border: 2px solid silver;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s ease, transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-window button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: silver-flow 2s linear infinite;
+        }
+
+        .profile-window button:hover {
+            background: #333;
+            transform: scale(1.05);
+        }
+
+        .profile-window button:first-child {
+            background: #444;
+        }
+
+        .profile-window button:first-child:hover {
+            background: #555;
+        }
+
+        /* New styles for message button */
+        .message-button {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: #333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .message-button img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .message-button:hover {
+            transform: scale(1.1);
+        }
+
+        .message-button:hover::after {
+            content: "Messages";
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* New styles for glowing red dot */
+        .glow-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            animation: glowing 1s infinite;
+        }
+
+        /* New styles for review slider */
+        .review-slider-container {
+            position: relative;
+            overflow: hidden;
+            width: 80%;
+            margin: 40px auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .review-slider-heading {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #fff;
+            transition: font-size 0.3s ease;
+        }
+
+        .review-slider-heading.active {
+            font-size: 3rem;
+        }
+
+        .review-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .review-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .star-rating {
+            font-size: 1.5rem;
+            color: #ff0;
+        }
+    .footer {
+    background: #000; /* Black background */
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.footer a {
+    color: #a777e3;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.nav {
+    position: relative; /* Ensure .nav is the containing block for absolute positioning */
+}
+
+#sell-button, #buy-button {
+    display: block; /* Ensure each button is on a new line */
+}
+
+.rentals-button {
+    position: fixed; /* Position relative to the nearest positioned ancestor (.nav) */
+    top: 180%; /* Position it below the previous content */
+    left:45.3%; /* Align it to the left edge of the .nav container */
+    margin-top: 10px; /* Space between the buttons */
+    background-color: #333; /* Background color */
+    color: #fff; /* Text color */
+    border: none; /* Remove default border */
+    padding: 5px 10px; /* Padding around the button */
+    border-radius:0; /* Rounded corners */
+    cursor: pointer; /* Cursor change on hover */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s ease; /* Hover transition */
+}
+@media (max-width: 767px) {
+    .rentals-button {
+        top: 180%; /* Adjust positioning for mobile screens */
+        left: 45.3%; /* Center horizontally */
+        transform: translateX(-50%); /* Center alignment */
+        padding: 10px 20px; /* Adjust padding for better touch interaction */
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div class="background">
+        <div id="p5-container"></div>
+    </div>
+
+    <div class="header animate__animated animate__fadeInDown">
+        <h1>CU Marketplace</h1>
+    </div>
+
+    <div class="stats animate__animated animate__fadeInUp animate__delay-1s" id="stats">
+        <div>
+            <h3 id="items-sold">0</h3>
+            <p>Items Sold</p>
+        </div>
+        <div>
+            <h3 id="customers">0</h3>
+            <p>Customers</p>
+        </div>
+        <div>
+            <h3 id="website-traffic">0</h3>
+            <p>Website Traffic</p>
+        </div>
+    </div>
+
+    <div class="nav animate__animated animate__fadeInUp animate__delay-2s">
+        <button id="sell-button">Sell</button>
+        <button id="buy-button">Buy</button>
+        <div>
+   <button class="rentals-button" onclick="location.href='usermap.html'">Housing</button>
+
+</div>
+
+    </div>
+
+    <div class="about" id="about">
+        <h2>About Us</h2>
+        <p>CU Marketplace provides a secure platform where students of CU can buy and sell a wide range of items with confidence. Whether it's textbooks, electronics, or furniture, the marketplace fosters a community of trust among its users. With verified profiles and a feedback system, students can make informed decisions and ensure reliable transactions. CU Marketplace not only simplifies the buying and selling process but also promotes sustainability through the reuse of goods within the university community.</p>
+    </div>
+
+    <div class="review-slider-container">
+        <div class="review-slider-heading" id="review-slider-heading">Customer Reviews</div>
+        <div class="review-slider" id="review-slider">
+            <!-- Reviews will be injected here by JavaScript -->
+        </div>
+    </div>
+
+ <!-- Existing HTML content -->
+
+<button class="message-button" onclick="location.href='chaat2.html'">
+    <img src="message.svg" alt="Messages">
+    <div class="glow-dot" id="glow-dot"></div>
+</button>
+
+   <button class="profile-button">
+        <span id="nickname"></span>
+        <img src="profile-circle.svg" alt="Profile" style="width: 30px; height: 30px;">
+    </button>
+
+      <div class="profile-window">
+        <button onclick="location.href='list.html'">Your Listings</button>
+        <button onclick="location.href='index.html'">Logout</button>
+    </div>
+
+<!-- New footer content -->
+<footer class="footer">
+    <p>&copy; <span id="year"></span> CU Marketplace. All rights reserved.</p>
+    <p><a href="a.html">User Agreement</a></p>
+</footer>
+
+<script>
+    // Update the year dynamically
+    document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+
+</html>
+
+
+
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script>
+        let yoff = 0.0;
+
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight / 2);
+            canvas.parent('p5-container');
+            noFill();
+        }
+
+        function draw() {
+            background(0);
+
+            stroke(255, 204, 0);
+            strokeWeight(2);
+
+            for (let j = 0; j < 5; j++) {
+                let xoff = 0;
+                beginShape();
+                for (let x = 0; x <= width; x += 10) {
+                    let y = map(noise(xoff, yoff + j * 0.1), 0, 1, 100 + j * 50, 200 + j * 50);
+                    vertex(x, y);
+                    xoff += 0.05;
+                }
+                endShape();
+            }
+
+            yoff += 0.01;
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight / 2);
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function animateNumber(element, start, end, duration) {
+                let startTime = null;
+
+                function animation(currentTime) {
+                    if (startTime === null) startTime = currentTime;
+                    const progress = Math.min((currentTime - startTime) / duration, 1);
+                    element.textContent = Math.floor(progress * (end - start) + start) + "+";
+                    if (progress < 1) {
+                        requestAnimationFrame(animation);
+                    }
+                }
+                requestAnimationFrame(animation);
+            }
+
+            animateNumber(document.getElementById('items-sold'), 0, 20, 6000);
+            animateNumber(document.getElementById('customers'), 0, 500, 6000);
+            animateNumber(document.getElementById('website-traffic'), 0, 2500, 6000);
+
+            function fetchReviews() {
+                fetch('fetch_reviews.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const slider = document.getElementById('review-slider');
+                        slider.innerHTML = ''; // Clear any existing content
+
+                        if (data.length === 0) {
+                            slider.innerHTML = '<p>No reviews available.</p>';
+                            return;
+                        }
+
+                        data.forEach(review => {
+                            const slide = document.createElement('div');
+                            slide.className = 'review-slide';
+                            slide.innerHTML = 
+                                `<p class="star-rating">${'★'.repeat(review.star)}${'☆'.repeat(5 - review.star)}</p>
+                                <p>${review.remark}</p>`;
+                            slider.appendChild(slide);
+                        });
+
+                        initializeSlider();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching reviews:', error);
+                        document.getElementById('review-slider').innerHTML = '<p>Error loading reviews.</p>';
+                    });
+            }
+
+            function initializeSlider() {
+                const slider = document.getElementById('review-slider');
+                const slides = slider.getElementsByClassName('review-slide');
+                let index = 0;
+
+                function showSlide() {
+                    for (let i = 0; i < slides.length; i++) {
+                        slides[i].style.transform = `translateX(-${index * 100}%)`;
+                    }
+                    index = (index + 1) % slides.length;
+                    setTimeout(showSlide, 3000); // Change slide every 3 seconds
+                }
+
+                if (slides.length > 0) {
+                    showSlide();
+                }
+            }
+
+            fetchReviews();
+
+            // Scroll event to handle the about section
+            window.addEventListener('scroll', function () {
+                const aboutSection = document.getElementById('about');
+                const aboutPosition = aboutSection.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.5;
+
+                if (aboutPosition < screenPosition) {
+                    aboutSection.classList.add('active');
+                } else {
+                    aboutSection.classList.remove('active');
+                }
+
+                const reviewSliderHeading = document.getElementById('review-slider-heading');
+                const reviewSliderHeadingPosition = reviewSliderHeading.getBoundingClientRect().top;
+
+                if (reviewSliderHeadingPosition < screenPosition) {
+                    reviewSliderHeading.classList.add('active');
+                } else {
+                    reviewSliderHeading.classList.remove('active');
+                }
+            });
+
+            // Profile button click event
+            document.querySelector('.profile-button').addEventListener('click', function () {
+                const profileWindow = document.querySelector('.profile-window');
+                profileWindow.style.display = profileWindow.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Handle forwarding email to next pages
+            document.getElementById('sell-button').addEventListener('click', function () {
+                const email = localStorage.getItem('email');
+                location.href = `buuy.html?email=${email}`;
+            });
+
+            document.getElementById('buy-button').addEventListener('click', function () {
+                const email = localStorage.getItem('email');
+                location.href = `sell.php?email=${email}`;
+            });
+
+            // Simulated function to fetch user count
+            function getSimulatedUserCount() {
+                // Simulate a user count; adjust this number to test different scenarios
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const simulatedCount = Math.floor(Math.random() * 10); // Simulate a random count between 0 and 9
+                        resolve(simulatedCount);
+                    }, 1000); // Simulate network delay
+                });
+            }
+
+            // Check if there are new messages and if there are users in chaat2.html
+            function checkNewMessages() {
+                const glowDot = document.getElementById('glow-dot');
+                getSimulatedUserCount()
+                    .then(userCount => {
+                        if (userCount > 0) {
+                            glowDot.style.display = 'block';
+                        } else {
+                            glowDot.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user count:', error);
+                        glowDot.style.display = 'none';
+                    });
+            }
+
+            checkNewMessages();
+            setInterval(checkNewMessages, 10000);
+
+            // Set the flag in local storage when the messages are viewed
+            document.querySelector('.message-button').addEventListener('click', function () {
+                localStorage.setItem('messagesSeen', 'true');
+                document.getElementById('glow-dot').style.display = 'none';
+            });
+
+            // Fetch and display the nickname
+            const email = localStorage.getItem('email');
+            if (email) {
+                fetch(`fetch_nickname.php?email=${email}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.nickname) {
+                            document.getElementById('nickname').textContent = data.nickname;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching nickname:', error);
+                    });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

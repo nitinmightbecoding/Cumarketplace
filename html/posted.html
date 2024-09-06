@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success Animation</title>
+      <link rel="icon" href="cu.png" type="image/png">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+        }
+
+        .checkmark {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 4;
+            stroke: #ff69b4;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #ff69b4;
+            animation: scale 0.5s ease-in-out both;
+            margin: 0 auto;
+        }
+
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 4;
+            stroke-miterlimit: 10;
+            stroke: #ff69b4;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke-width: 4;
+            stroke: #ff69b4;
+            fill: none;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message,
+        .instructions1,
+        .instructions2,
+        .instructions3,
+        .instructions4,
+        .button-container {
+            opacity: 0;
+            animation: uplift 0.5s ease-in-out forwards;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 24px;
+            animation-delay: 1s;
+        }
+
+        .instructions1 {
+            margin-top: 20px;
+            font-size: 18px;
+            animation-delay: 1.5s;
+        }
+
+        .instructions2 {
+            margin-top: 20px;
+            font-size: 18px;
+            animation-delay: 2s;
+        }
+
+        .instructions3 {
+            margin-top: 20px;
+            font-size: 18px;
+            animation-delay: 2.5s;
+        }
+
+        .instructions4 {
+            margin-top: 20px;
+            font-size: 18px;
+            animation-delay: 3s;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #ff69b4;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            animation-delay: 3.5s;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .button {
+            background-color: white;
+            color: #121212;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .button:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.05);
+        }
+
+        .home-button {
+            background-color: #ff69b4;
+            color: white;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            position: relative;
+        }
+
+        .home-button:hover {
+            background-color: #ff1493;
+            transform: scale(1.1);
+        }
+
+        .home-button svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .home-button:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @keyframes uplift {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+            <path class="checkmark__check" fill="none" d="M14 27l10 10 14-14" />
+        </svg>
+        <div class="message">Your product listed successfully</div>
+        <div class="instructions1">You can remove your listed products by going to <span class="highlight">Home >> Your account >> Your listings >> Remove</span></div>
+        <div class="instructions2">You can see your listed products by going to <span class="highlight">Home >> Sell >> Listed products</span></div>
+        <div class="instructions3">Buyers will contact you on your provided contact details.</div>
+        <div class="instructions4">They can also contact you by our in-house chat system. To navigate for chat, go to <span class="highlight">Home >> Messages >> Chat</span></div>
+        <div class="button-container">
+            <button class="home-button" onclick="window.location.href='main.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 3l-9 9h6v9h6v-9h6l-9-9z"/>
+                </svg>
+                <span class="tooltip">Home</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkmark = document.querySelector('.checkmark');
+            checkmark.addEventListener('animationend', () => {
+                const elements = document.querySelectorAll('.message, .instructions1, .instructions2, .instructions3, .instructions4, .button-container');
+                elements.forEach((element, index) => {
+                    element.style.animationName = 'uplift';
+                    element.style.animationDelay = `${1 + (index * 0.5)}s`;
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

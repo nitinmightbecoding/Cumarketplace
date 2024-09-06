@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+      <link rel="icon" href="cu.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .senders {
+            flex: 0 0 30%;
+            border-right: 1px solid #333;
+            background-color: #2c2c2e;
+            overflow-y: auto;
+        }
+
+        .senders .sender-box {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.2s;
+            border-radius: 8px;
+            margin: 5px 10px;
+        }
+
+        .senders .sender-box:hover {
+            background-color: #3a3a3c;
+            transform: scale(1.02);
+        }
+
+        .senders .sender-box .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #4a4a4c;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .senders .sender-box .sender-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1c1c1e;
+        }
+
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #0a84ff, #0054a6);
+            color: #fff;
+        }
+
+        .chat-header .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #4a4a4c;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .chat-header .chat-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #2c2c2e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages .message {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            max-width: 75%;
+            word-break: break-word;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .chat-messages .message:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #0a84ff;
+            border-radius: 12px;
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .chat-messages .sent {
+            background-color: #0a84ff;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .chat-messages .received {
+            background-color: #3a3a3c;
+            color: #fff;
+            align-self: flex-start;
+        }
+
+        .send-message {
+            display: flex;
+            padding: 10px;
+            background-color: #2c2c2e;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+            z-index: 10;
+            margin-bottom: 20px;
+        }
+
+        .send-message input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            margin-right: 10px;
+            background-color: #3a3a3c;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .send-message input:focus {
+            outline: none;
+        }
+
+        .send-message button {
+            background-color: #0a84ff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .send-message button:hover {
+            background-color: #0054a6;
+            transform: scale(1.05);
+        }
+
+        .send-message button img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .no-chat-message {
+            display: none;
+            padding: 15px;
+            color: #bbb;
+            text-align: center;
+            font-size: 16px;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            background-color: #1c1c1e;
+        }
+
+        .no-chat-message-phone {
+            display: none;
+            padding: 15px;
+            color: #bbb;
+            text-align: center;
+            font-size: 16px;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            background-color: #1c1c1e;
+        }
+
+        @media (min-width: 769px) {
+            .container {
+                flex-direction: row;
+                height: 100vh;
+                width: 100vw;
+                max-width: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .senders {
+                width: 30%;
+                border-right: 1px solid #333;
+            }
+
+            .chat {
+                height: auto;
+            }
+
+            .chat-messages {
+                margin-bottom: 0;
+            }
+
+            .no-chat-message {
+                display: flex;
+            }
+
+            .no-chat-message-phone {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .senders {
+                height: 20vh;
+                overflow-y: auto;
+            }
+
+            .chat {
+                height: calc(60vh - 60px);
+            }
+
+            .chat-messages {
+                height: calc(100vh - 100px);
+                overflow-y: auto;
+                margin-bottom: 0;
+                padding-bottom: 20px;
+            }
+
+            .send-message {
+                bottom: 0;
+                margin-top: auto;
+                margin-bottom: 50px;
+            }
+
+            .no-chat-message {
+                display: none;
+            }
+
+            .no-chat-message-phone {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="senders" id="senders">
+            <p id="no-senders-message" style="display: none; padding: 15px; color: #bbb; text-align: center;">Waiting for seller to reply, you will be able to see chat once seller replies.</p>
+        </div>
+        <div class="chat">
+            <div class="chat-header">
+                <div class="avatar" id="chat-avatar"></div>
+                <div class="chat-title" id="chat-title"></div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div id="no-chat-message" class="no-chat-message">Please select a user with whom you want to chat with from the left side!</div>
+                <div id="no-chat-message-phone" class="no-chat-message-phone">Please select a user to chat with from the top!</div>
+            </div>
+            <div class="send-message">
+                <input type="text" id="message-input" placeholder="Type your message">
+                <button onclick="sendMessage()"><img src="https://img.icons8.com/ios-filled/50/ffffff/paper-plane.png" alt="Send"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const receiverEmail = localStorage.getItem('email') || "receiver@example.com";
+const sendersContainer = document.getElementById('senders');
+const chatTitle = document.getElementById('chat-title');
+const chatMessagesContainer = document.getElementById('chat-messages');
+const messageInput = document.getElementById('message-input');
+const noSendersMessage = document.getElementById('no-senders-message');
+const noChatMessage = document.getElementById('no-chat-message');
+const noChatMessagePhone = document.getElementById('no-chat-message-phone');
+const chatAvatar = document.getElementById('chat-avatar');
+let currentSender = '';
+
+// Fetch senders and update the UI
+fetch(`fetchreceiver2.php?receiver=${receiverEmail}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.length === 0) {
+            noSendersMessage.style.display = 'block';
+        } else {
+            noSendersMessage.style.display = 'none';
+            data.forEach(sender => {
+                const senderBox = document.createElement('div');
+                senderBox.className = 'sender-box';
+                senderBox.innerHTML = `<div class="avatar" style="background-image: url('boy1.png');"></div><div class="sender-name">${sender}</div>`;
+                senderBox.onclick = () => {
+                    currentSender = sender;
+                    fetchNickname(sender);
+                    displayChat(sender);
+                    startChatRefresh();
+                };
+                sendersContainer.appendChild(senderBox);
+            });
+        }
+    })
+    .catch(error => console.error('Error fetching senders:', error));
+
+// Fetch nickname for the selected sender
+function fetchNickname(senderEmail) {
+    fetch(`fetchnickname.php?email=${senderEmail}`)
+        .then(response => response.json())
+        .then(data => {
+            chatTitle.textContent = data.nickname || "Unknown";
+            chatAvatar.style.backgroundImage = "url('boy.png')";
+        })
+        .catch(error => console.error('Error fetching nickname:', error));
+}
+
+// Display chat messages for the selected sender
+function displayChat(sender) {
+    fetch(`display2.php?sender=${sender}&receiver=${receiverEmail}`)
+        .then(response => response.json())
+        .then(data => {
+            chatMessagesContainer.innerHTML = '';
+            if (data.length === 0) {
+                noChatMessage.style.display = 'block';
+                noChatMessagePhone.style.display = 'block';
+            } else {
+                noChatMessage.style.display = 'none';
+                noChatMessagePhone.style.display = 'none';
+                data.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message ' + (message.sender === receiverEmail ? 'sent' : 'received');
+                    messageDiv.textContent = message.chat;
+
+                    // If there is an image (dspp), add it below the message
+                    if (message.dspp) {
+                        const image = document.createElement('img');
+                        image.src = message.dspp;
+                        image.style.width = '100px'; // Adjust as needed
+                        image.style.marginTop = '10px';
+                        messageDiv.appendChild(image);
+                    }
+
+                    chatMessagesContainer.appendChild(messageDiv);
+                });
+                // Scroll to the bottom every 15 seconds
+                startScrollInterval();
+            }
+        })
+        .catch(error => console.error('Error fetching chat messages:', error));
+}
+
+// Send a new message
+function sendMessage() {
+    const message = messageInput.value;
+    fetch('send2.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            sender: receiverEmail,
+            receiver: currentSender,
+            chat: message
+        })
+    })
+    .then(response => response.json())
+    .then(() => {
+        messageInput.value = '';
+        displayChat(currentSender);
+    })
+    .catch(error => console.error('Error sending message:', error));
+}
+
+// Refresh chat messages at regular intervals
+function startChatRefresh() {
+    setInterval(() => {
+        if (currentSender) {
+            displayChat(currentSender);
+        }
+    }, 1000);
+}
+
+// Scroll to the bottom of the chat messages container
+function scrollToBottom() {
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+}
+
+// Scroll to the bottom every 15 seconds
+function startScrollInterval() {
+    setInterval(scrollToBottom, 15000);
+}
+
+// Handle 'Enter' key press to send a message
+messageInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Display</title>
+      <link rel="icon" href="cu.png" type="image/png">
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow-y: scroll; /* Enable vertical scrollbar */
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 28px;
+            color: #fff;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            position: relative;
+            z-index: 1;
+        }
+        .box {
+            background: linear-gradient(145deg, #000, #434343);
+            color: #fff;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            width: 300px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+        .box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .remove-btn {
+            background: red;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 18px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .remove-btn:hover {
+            background: darkred;
+            transform: scale(1.05);
+        }
+        .remove-btn:active {
+            background: #ff1a1a;
+            transform: scale(0.95);
+        }
+        .no-data {
+            text-align: center;
+            color: #fff;
+            font-size: 24px;
+            margin-top: 50px;
+        }
+        @keyframes crystalParticleFade {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0) translateY(-50px); }
+        }
+        .crystal-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: crystalParticleFade 1s forwards;
+            mix-blend-mode: screen;
+        }
+        .background-animation {
+            display: none; /* Hide background animation */
+        }
+        /* Review Popup Styles */
+        .review-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        .review-popup textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #555;
+            background: #222;
+            color: #fff;
+            resize: none;
+        }
+        .review-popup .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: #555;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .review-popup .star.selected {
+            color: gold;
+            transform: scale(1.2);
+        }
+        .review-popup .close-btn {
+            background: darkred;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .review-popup .submit-btn {
+            background: green;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Products</h1>
+    <div class="container" id="dataContainer">
+        <!-- Data from PHP will be injected here -->
+    </div>
+    <div id="noDataMessage" class="no-data" style="display: none;">Nothing to show</div>
+
+    <!-- Review Popup -->
+    <div id="reviewPopup" class="review-popup">
+        <textarea id="reviewText" placeholder="Write your review here..."></textarea>
+        <div id="starContainer">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <div style="text-align: right; margin-top: 10px;">
+            <button class="close-btn" onclick="closeReviewPopup()">Close</button>
+            <button class="submit-btn" onclick="submitReview()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            loadData();
+            bindStarRatings(); // Bind star ratings functionality
+        });
+
+        function loadData() {
+            const email = localStorage.getItem('email');
+            const dataContainer = document.getElementById('dataContainer');
+            const noDataMessage = document.getElementById('noDataMessage');
+
+            if (email) {
+                fetch(`fetch_data.php?email=${encodeURIComponent(email)}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data.trim()) {
+                            dataContainer.innerHTML = data;
+                            noDataMessage.style.display = 'none';
+                            bindRemoveButtons(); // Bind remove buttons after data load
+                        } else {
+                            dataContainer.innerHTML = '';
+                            noDataMessage.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        dataContainer.innerHTML = '';
+                        noDataMessage.style.display = 'block';
+                    });
+            } else {
+                dataContainer.innerHTML = '';
+                noDataMessage.style.display = 'block';
+            }
+        }
+
+        function bindRemoveButtons() {
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const box = this.closest('.box');
+                    if (!box) return;
+
+                    createCrystalParticleEffect(box);
+                    setTimeout(() => {
+                        removeData(box);
+                    }, 1000); // Delay to allow animation to complete
+                });
+            });
+        }
+
+        function createCrystalParticleEffect(element) {
+            const particles = 100; // Number of particles
+            const rect = element.getBoundingClientRect();
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'crystal-particle';
+                const x = (Math.random() - 0.5) * 100;
+                const y = (Math.random() - 0.5) * 100;
+                particle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 80%)`; // Random bright color
+                particle.style.left = `${rect.left + (Math.random() * rect.width)}px`;
+                particle.style.top = `${rect.top + (Math.random() * rect.height)}px`;
+                document.body.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000); // Remove particle after animation
+            }
+        }
+
+        function removeData(boxElement) {
+            const email = localStorage.getItem('email');
+            if (!email) {
+                console.error('Email not found in localStorage.');
+                return;
+            }
+
+            // Extract description from the <p> tag
+            const description = boxElement.querySelector('p').textContent.replace('Description: ', '').trim();
+            if (!description) {
+                console.error('Description not found in boxElement.');
+                return;
+            }
+
+            // Send the data to the PHP script
+            fetch('reversefetch.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `email=${encodeURIComponent(email)}&description=${encodeURIComponent(description)}`
+            })
+            .then(response => response.text())
+            .then(responseData => {
+                console.log('Response from server:', responseData);
+                if (responseData.includes("Successfully deleted")) {
+                    // Remove the boxElement from the DOM if deletion was successful
+                    boxElement.remove();
+                    // Open review popup and reload data
+                    setTimeout(() => {
+                        openReviewPopup();
+                        loadData(); // Reload data to refresh the review section
+                    }, 1000); // Delay to allow animation to complete
+                } else {
+                    console.error('Failed to delete data:', responseData);
+                }
+            })
+            .catch(error => {
+                console.error('Error during remove request:', error);
+            });
+        }
+
+        function bindStarRatings() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    const value = parseInt(this.getAttribute('data-value'), 10);
+                    const starContainer = document.getElementById('starContainer');
+                    starContainer.querySelectorAll('.star').forEach(star => {
+                        if (parseInt(star.getAttribute('data-value'), 10) <= value) {
+                            star.classList.add('selected');
+                        } else {
+                            star.classList.remove('selected');
+                        }
+                    });
+                });
+            });
+        }
+
+        function openReviewPopup() {
+            document.getElementById('reviewPopup').style.display = 'block';
+        }
+
+        function closeReviewPopup() {
+            document.getElementById('reviewPopup').style.display = 'none';
+        }
+
+        function submitReview() {
+            const email = localStorage.getItem('email');
+            const reviewText = document.getElementById('reviewText').value;
+            const stars = document.querySelectorAll('.star.selected').length;
+
+            if (!email || !reviewText || stars === 0) {
+                alert('Please provide a review and select a star rating.');
+                return;
+            }
+
+            fetch('submit_review.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `email=${encodeURIComponent(email)}&remark=${encodeURIComponent(reviewText)}&star=${stars}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    closeReviewPopup();
+                    loadData(); // Reload data to show the updated reviews
+                } else {
+                    alert('Error submitting review.');
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting review:', error);
+            });
+        }
+    </script>
+</body>
+</html>

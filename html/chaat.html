@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+      <link rel="icon" href="cu.png" type="image/png">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #e0e0e0;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .header {
+            background: #1e1e1e;
+            color: #00bcd4;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #121212;
+            border-bottom: 1px solid #333;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #333;
+            position: relative;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .message:hover {
+            background: #444;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        }
+        .message .sender {
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #00bcd4;
+        }
+        .message-form {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background: #1e1e1e;
+            border-top: 1px solid #333;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.4);
+        }
+        .message-form input, .message-form button {
+            padding: 12px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            font-size: 1rem;
+            color: #e0e0e0;
+        }
+        .message-form input[type="text"] {
+            flex: 1;
+            background: #333;
+            border-color: #555;
+        }
+        .message-form input[type="text"]:focus {
+            border-color: #00bcd4;
+            outline: none;
+        }
+        .message-form button {
+            background: #00bcd4;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .message-form button:hover {
+            background: #0097a7;
+        }
+        .message-popup {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00bcd4;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease, bottom 0.3s ease;
+        }
+        .message-popup.show {
+            display: block;
+            opacity: 1;
+            bottom: 60px;
+        }
+        #nickname {
+            display: none;
+        }
+        .predefined-messages {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .predefined-messages button {
+            background: #444;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        .predefined-messages button:hover {
+            background: #555;
+        }
+        .countdown-popup {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00bcd4;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease, bottom 0.3s ease;
+        }
+        .countdown-popup.show {
+            display: block;
+            opacity: 1;
+            bottom: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">Start conversation with seller</div>
+        <div class="messages" id="messages"></div>
+        <div class="message-form">
+            <input type="text" id="nickname" class="hidden" readonly>
+            <div class="predefined-messages">
+                <button onclick="insertPredefinedMessage('I WANT TO PURCHASE')">I WANT TO PURCHASE</button>
+                <button onclick="insertPredefinedMessage('IT\'S OVERPRICED')">IT\'S OVERPRICED</button>
+                <button onclick="insertPredefinedMessage('I AM INTERESTED')">I AM INTERESTED</button>
+                <button onclick="insertPredefinedMessage('CAN YOU REDUCE PRICE A BIT?')">CAN YOU REDUCE PRICE A BIT?</button>
+            </div>
+            <input type="text" id="message" placeholder="Type a message" autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <div id="message-popup" class="message-popup">
+        Message sent successfully.
+    </div>
+
+    <div id="countdown-popup" class="countdown-popup">
+        Auto closing in <span id="countdown">10</span> seconds. Please wait until seller replies. You can see the seller reply by clicking the Message button in the top Right corner of the screen!
+    </div>
+
+    <script>
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        var email = localStorage.getItem('email');
+        var description = getUrlParameter('description');
+
+        fetch('fetch_nickname.php?email=' + encodeURIComponent(email))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('nickname').value = data.nickname;
+                } else {
+                    alert('Failed to fetch nickname.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching nickname:', error);
+            });
+
+        function sendMessage() {
+            var nicknameInput = document.getElementById('nickname');
+            var messageInput = document.getElementById('message');
+            var messagesContainer = document.getElementById('messages');
+
+            var nickname = nicknameInput.value.trim();
+            var message = messageInput.value.trim();
+
+            if (message === '') {
+                alert('Please enter a message.');
+                return;
+            }
+
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+
+            var senderElement = document.createElement('div');
+            senderElement.classList.add('sender');
+            senderElement.textContent = nickname;
+
+            var textElement = document.createElement('div');
+            textElement.textContent = message;
+
+            messageElement.appendChild(senderElement);
+            messageElement.appendChild(textElement);
+
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            fetch('send.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender: email,
+                    description: description,
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessagePopup();
+                    showCountdownPopup();
+                } else {
+                    alert('Failed to send message: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+                alert('Failed to send message. Please try again.');
+            });
+
+            messageInput.value = '';
+            messageInput.focus();
+        }
+
+        function showMessagePopup() {
+            const popup = document.getElementById('message-popup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        function showCountdownPopup() {
+            const countdownPopup = document.getElementById('countdown-popup');
+            countdownPopup.classList.add('show');
+            let countdown = 10;
+            const countdownElement = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                countdownElement.textContent = countdown;
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(interval);
+                    countdownPopup.classList.remove('show');
+                    window.history.back();
+                }
+            }, 1000);
+        }
+
+        function fetchMessages() {
+            fetch('send2.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender: email,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    var messagesContainer = document.getElementById('messages');
+                    messagesContainer.innerHTML = '';
+                    data.messages.forEach(msg => {
+                        var messageElement = document.createElement('div');
+                        messageElement.classList.add('message');
+
+                        var senderElement = document.createElement('div');
+                        senderElement.classList.add('sender');
+                        senderElement.textContent = msg.sender;
+
+                        var textElement = document.createElement('div');
+                        textElement.textContent = msg.chat;
+
+                        messageElement.appendChild(senderElement);
+                        messageElement.appendChild(textElement);
+
+                        messagesContainer.appendChild(messageElement);
+                    });
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                } else {
+                    console.error('Failed to fetch messages:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching messages:', error);
+            });
+        }
+
+        function insertPredefinedMessage(message) {
+            document.getElementById('message').value = message;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchMessages();
+        });
+    </script>
+</body>
+</html>

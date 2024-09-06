@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Upload</title>
+      <link rel="icon" href="cu.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: none; /* Removed the border */
+            border-radius: 0;
+            background-color: #1e1e1e;
+            box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px 15px; /* Ensures equal left and right padding */
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            border-radius: 0;
+            background-color: #2b2b2b;
+            color: #fff;
+            box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s;
+            opacity: 0.6;
+        }
+
+        button:hover:before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        button:hover {
+            background-color: #ff3333;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 20px;
+            background: linear-gradient(135deg, #ff4d4d 25%, #121212 25%, #121212 50%, #ff4d4d 50%, #ff4d4d 75%, #121212 75%);
+            background-size: 20px 20px;
+            border-radius: 0;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            top: 0;
+            left: 0;
+            line-height: 20px;
+            font-size: 12px;
+        }
+
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #333;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4d4d;
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff3333;
+        }
+
+       .rent-checkbox-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .rent-checkbox-label {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #444;
+        color: white;
+        border: 2px solid #444;
+        border-radius: 5px;
+        margin: 0 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .rent-checkbox-label input[type="radio"] {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        border-radius: 3px;
+        background-color: #222;
+        border: 2px solid #777;
+        appearance: none; /* Removes default radio button styling */
+        cursor: pointer;
+    }
+
+    .rent-checkbox-label input[type="radio"]:checked {
+        background-color: #4caf50;
+        border-color: #4caf50;
+    }
+
+    .rent-checkbox-label:hover input[type="radio"] {
+        border-color: #ff4d4d;
+    }
+
+    .rent-checkbox-label:hover {
+        background-color: #555;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Upload Product Details</h1>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+    <form action="buy.php" method="post" enctype="multipart/form-data" oninput="updateProgress()">
+        <label for="productImage">Upload Image:</label>
+        <input type="file" id="productImage" name="productImage" accept="image/*" required>
+
+        <label for="productDescription">Product Description:</label>
+        <textarea id="productDescription" name="productDescription" rows="5" required></textarea>
+
+        <label for="sellingPrice">Selling Price:</label>
+        <input type="number" id="sellingPrice" name="sellingPrice" step="0.01" required>
+
+        <label for="contactName">Uid:</label>
+        <input type="text" id="contactName" name="contactName" required>
+
+        <label for="contactEmail">Email:</label>
+        <input type="email" id="contactEmail" name="contactEmail" required>
+
+        <label for="contactPhone">WhatsApp Number:</label>
+        <input type="text" id="contactPhone" name="contactPhone" required>
+
+        <label for="address">Hostel & Room no. / Address:</label>
+        <input type="text" id="address" name="address" required>
+
+      <label for="rent">Do you want to Label this item available for Rent?</label>
+    <div class="rent-checkbox-container">
+        <label for="rentYes" class="rent-checkbox-label">
+            <input type="radio" id="rentYes" name="rent" value="yes" required> Yes
+        </label>
+        
+        <label for="rentNo" class="rent-checkbox-label">
+            <input type="radio" id="rentNo" name="rent" value="no" required> No
+        </label>
+    </div>
+
+        <!-- Hidden input for email from local storage -->
+        <input type="hidden" id="localStorageEmail" name="localStorageEmail">
+
+        <button type="submit">Send</button>
+    </form>
+
+    <!-- Script to retrieve email from local storage and populate hidden input -->
+    <script>
+        // Retrieve email from local storage
+        var email = localStorage.getItem('email');
+        // Set the value of hidden input
+        document.getElementById('localStorageEmail').value = email;
+
+        function updateProgress() {
+            var fields = document.querySelectorAll("input, textarea");
+            var filledFields = 0;
+            fields.forEach(field => {
+                if (field.value) {
+                    filledFields++;
+                }
+            });
+            var progress = Math.round((filledFields / fields.length) * 100);
+            document.getElementById("progressBar").style.width = progress + "%";
+            document.getElementById("progressText").innerText = progress + "%";
+        }
+    </script>
+</body>
+
+</html>

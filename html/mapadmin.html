@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - List a Flat</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+ body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: #f4f4f4;
+}
+
+/* Heading styling */
+h2 {
+    text-align: center;
+    color: #f4f4f4;
+    padding: 20px 0;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Map container styling */
+#map {
+    height: 50vh;
+    width: 100%;
+    margin-bottom: 20px;
+    border: 2px solid #333;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+/* Form container styling */
+form {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+/* Form label styling */
+form label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+    color: #f4f4f4;
+    font-size: 1.1rem;
+}
+
+/* Form input, select, and textarea styling */
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background-color: #2c2c2c;
+    color: #f4f4f4;
+    font-size: 1rem;
+}
+
+/* Textarea styling */
+form textarea {
+    height: 120px;
+}
+
+/* Form button styling */
+form button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 25px;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* General styling for tick-option groups (checkboxes and radio buttons) */
+.tick-option-group {
+    display: flex;
+    align-items: center;
+}
+
+.tick-option-group label,
+.tick-option-group input {
+    margin-right: 10px;
+}
+
+
+/* Styling for radio buttons and checkboxes within tick-option groups */
+.tick-option-group input[type="radio"],
+.tick-option-group input[type="checkbox"] {
+    margin-right: 10px;
+    margin-left: 5px;
+    transform: scale(1.2);
+}
+
+/* Optional: Specific styling for checkbox groups */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+/* Optional: Specific styling for radio button groups */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+/* Optional: Additional styling for individual checkbox inputs */
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    margin-left: 5px;
+    transform: scale(1.2);
+}
+
+/* Optional: Additional styling for individual radio inputs */
+.radio-group input[type="radio"] {
+    margin-right: 10px;
+    margin-left: 5px;
+    transform: scale(1.2);
+}
+
+/* Styling for the furnished options (if applicable) */
+.furnished-options {
+    display: none;
+    margin-top: 15px;
+}
+
+/* Styling for maintenance charge options */
+.maintainance-charge-option {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+}
+
+/* Styling for labels within maintenance charge options */
+.maintainance-charge-option label {
+    margin-left: 10px;
+    font-size: 1.1rem;
+}
+
+/* Styling for inputs within maintenance charge options */
+.maintainance-charge-option input[type="radio"],
+.maintainance-charge-option input[type="number"] {
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
+/* Styling for the log message modal */
+#logMessageModal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 600px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 20px;
+    border: 2px solid #ffffff;
+    text-align: center;
+    z-index: 1000;
+    display: none;
+}
+
+/* Styling for paragraphs within the log message modal */
+#logMessageModal p {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+/* Styling for the close button within the log message modal */
+#logMessageModal .closeBtn {
+    background: none;
+    border: 2px solid #ffffff;
+    padding: 5px 15px;
+    color: #ffffff;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* Close button hover effect */
+#logMessageModal .closeBtn:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+    </style>
+</head>
+<body>
+    <h2>Click on map to select location of property.</h2>
+    <div id="map"></div>
+
+    <!-- Log message modal -->
+<div id="logMessageModal">
+    <p>We only deal with properties within the radius of 60Km from Chandigarh University, so kindly select a location inside the orange circle.</p>
+    <button class="closeBtn" onclick="closeLogMessage()">CLOSE</button>
+</div>
+
+
+    <form id="flatForm" enctype="multipart/form-data">
+        <input type="hidden" id="latitude" name="lati">
+        <input type="hidden" id="longitude" name="longi">
+
+        <label>Rent (₹):</label>
+        <input type="number" id="rent" name="rent" required>
+
+        <label>Upload Images:</label>
+        <input type="file" id="images" name="images[]" accept="image/*" multiple required>
+
+        <label>Description:</label>
+        <textarea id="dsp" name="dsp" required></textarea>
+
+        <label for="type">Type of property:</label>
+<select id="type" name="type" required>
+    <option value="Flat">Flat</option>
+    <option value="PG">PG</option>
+    <option value="Apartment">Apartment</option>
+   
+</select>
+
+      <label for="size">Size of Property:</label>
+<select id="size" name="size" required>
+    <option value="1BHK">1BHK</option>
+    <option value="2BHK">2BHK</option>
+    <option value="3BHK">3BHK</option>
+    <option value="4BHK">4BHK</option>
+</select>
+
+
+        <label>Terms and Conditions (optional):</label>
+        <textarea id="tc" name="tc" ></textarea>
+
+        <label>Seller WhatsApp Number:</label>
+        <input type="text" id="sellerwhatsapp" name="sellerwhatsapp" required>
+
+        <label>Seller Name:</label>
+        <input type="text" id="sellername" name="sellername" required>
+
+        <label>Preferred Relationship:</label>
+        <select id="relationship" name="relationship" required>
+            <option value="bachelors">Bachelors only</option>
+            <option value="Married_couples">Married couples only</option>
+            <option value="Livin_couples">Livin couples only</option>
+            <option value="All_Relationship_allowed">All Relationship allowed</option>
+        </select>
+
+        <label>You Are:</label>
+        <select id="owner" name="owner" required>
+            <option value="Owner">Owner</option>
+            <option value="Broker">Broker</option>
+            <option value="Renter_in_this_room_looking_for_roommate">Renter in this room looking for roommate</option>
+        </select>
+
+     <label>Maintenance Charge:</label>
+  <div class="maintainance-charge-option">
+      <input type="radio" id="maintainance_no" name="maintainance_option" value="0" required>
+      <label for="maintainance_no">No Maintenance Charge</label><br>
+
+      <input type="radio" id="maintainance_specify" name="maintainance_option" value="specify_charge">
+      <label for="maintainance_specify">Specify Charge:</label>
+      <input type="number" id="maintainance_charge" name="maintainance_charge" placeholder="₹" min="0">
+  </div>
+
+<label for="floor">Property is on which floor:</label>
+<select id="floor" name="floor" required>
+    <option value="Ground">Ground</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+    <option value="14">14</option>
+    <option value="15">15</option>
+    <option value="16">16</option>
+    <option value="17">17</option>
+    <option value="18">18</option>
+    <option value="19">19</option>
+    <option value="20">20</option>
+    <option value="21">21</option>
+    <option value="22">22</option>
+    <option value="23">23</option>
+    <option value="24">24</option>
+    <option value="25">25</option>
+    <option value="26">26</option>
+    <option value="27">27</option>
+    <option value="28">28</option>
+    <option value="29">29</option>
+    <option value="30">30</option>
+    <option value="31">31</option>
+    <option value="32">32</option>
+    <option value="33">33</option>
+    <option value="34">34</option>
+    <option value="35">35</option>
+    <option value="36">36</option>
+    <option value="37">37</option>
+    <option value="38">38</option>
+    <option value="39">39</option>
+    <option value="40">40</option>
+    <option value="41">41</option>
+    <option value="42">42</option>
+    <option value="43">43</option>
+    <option value="44">44</option>
+    <option value="45">45</option>
+    <option value="46">46</option>
+    <option value="47">47</option>
+    <option value="48">48</option>
+    <option value="49">49</option>
+    <option value="50">50</option>
+</select>
+
+       
+
+        <label>Total Floors:</label>
+        <input type="number" id="totalfloor" name="totalfloor" required>
+
+        <label>Gender Preferred:</label>
+        <select id="genderprefered" name="genderprefered" required>
+            <option value="only_boys">Only Boys</option>
+            <option value="only_girls">Only Girls</option>
+            <option value="both_boys and girls">Any Gender</option>
+         
+        </select>
+
+        <label>Furnished?</label>
+        <input type="radio" id="furnsihed_yes" name="furnsihed" value="yes" required>
+        <label for="furnsihed_yes">Yes</label>
+        <input type="radio" id="furnsihed_no" name="furnsihed" value="no">
+        <label for="furnsihed_no">No</label>
+
+        <div class="furnsihed-options">
+            <label>Furnished Features:</label>
+            <input type="checkbox" id="ac" name="ac">
+            <label for="ac">AC</label>
+            <input type="checkbox" id="washing" name="washing">
+            <label for="washing">Washing Machine</label>
+            <input type="checkbox" id="bed" name="bed">
+            <label for="bed">Bed</label>
+            <input type="checkbox" id="sofa" name="sofa">
+            <label for="sofa">Sofa</label>
+        </div>
+
+        <label>No. of Toilets:</label>
+        <input type="number" id="toilet" name="toilet" required>
+
+  <label for="securitydeposit">Security Deposit (₹):</label>
+<div>
+    <input type="radio" id="securitydeposit_yes" name="securitydeposit_option" value="yes" required>
+    <label for="securitydeposit_yes">Yes</label>
+
+    <input type="radio" id="securitydeposit_no" name="securitydeposit_option" value="no" required>
+    <label for="securitydeposit_no">No</label>
+</div>
+<input type="number" id="securitydeposit" name="securitydeposit" placeholder="Enter amount" style="display:none;">
+
+<!-- Electricity Bill -->
+<label for="electricitybill">Electricity Bill (₹):</label>
+<div>
+  
+
+    <input type="radio" id="electricitybill_no" name="electricitybill_option" value="no" required>
+    <label for="electricitybill_no">No</label>
+
+    <input type="radio" id="electricitybill_meter" name="electricitybill_option" value="meter" required>
+    <label for="electricitybill_meter">As per meter</label>
+
+     <input type="radio" id="electricitybill_yes" name="electricitybill_option" value="yes" required>
+    <label for="electricitybill_yes">Yes</label>
+</div>
+<input type="number" id="electricitybill" name="electricitybill" placeholder="Enter amount">
+
+
+
+<!-- Water Bill -->
+<label for="waterbill">Water Bill (₹):</label>
+<div>
+    <input type="radio" id="waterbill_yes" name="waterbill_option" value="yes" required>
+    <label for="waterbill_yes">Yes</label>
+
+    <input type="radio" id="waterbill_no" name="waterbill_option" value="no" required>
+    <label for="waterbill_no">No</label>
+</div>
+<input type="number" id="waterbill" name="waterbill" placeholder="Enter amount" style="display:none;">
+
+
+        <label>Address of property in detail:</label>
+        <input type="text" id="location" name="location" required>
+
+        <label>Seller Email ID:</label>
+        <input type="email" id="mail" name="mail" required>
+
+
+        <label>Parking:</label>
+<input type="radio" id="parking_yes" name="parking" value="yes" required>
+<label for="parking_yes">Yes</label>
+<input type="radio" id="parking_no" name="parking" value="no">
+<label for="parking_no">No</label>
+
+<!-- Phone Number for Calling -->
+<label for="call_number">Phone Number for Calling:</label>
+<input type="tel" id="call_number" name="call_number" placeholder="Enter phone number for calling" required>
+
+ <label>Brokerage charge (or any hidden charges):</label>
+  <div class="maintainance-charge-option2">
+      <input type="radio" id="maintainance_no2" name="maintainance_option2" value="0" required>
+      <label for="maintainance_no">No Brokerage Charge</label><br>
+
+      <input type="radio" id="maintainance_specify2" name="maintainance_option2" value="specify_charge2">
+      <label for="maintainance_specify">Specify Charge:</label>
+      <input type="number" id="maintainance_charge2" name="maintainance_charge2" placeholder="₹" min="0">
+  </div>
+
+<button type="submit">List Flat</button>
+    </form>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+ 
+     <script>
+    // Define the map
+
+       var map = L.map('map').setView([30.7693, 76.5754], 12);
+
+    // Tile layer for the map
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var userLocationMarker;  // Marker for the user's live location
+    var selectedLocationMarker;  // Marker for the user-selected location
+    var circle;  // Variable to store the circle
+
+    // Custom icon for the user's live location
+    var userIcon = L.icon({
+        iconUrl: 'point.png',  // Path to your custom image
+        iconSize: [32, 32],          // Size of the icon (adjust as needed)
+        iconAnchor: [16, 32],        // Point of the icon which will correspond to marker's location
+        popupAnchor: [0, -32]        // Point from which the popup should open relative to the iconAnchor
+    });
+
+    // Custom icon for the user-selected location
+    var selectedIcon = L.icon({
+        iconUrl: 'navigator.png',  // Path to your custom image
+        iconSize: [47, 47],          // Size of the icon (adjust as needed)
+        iconAnchor: [16, 32],        // Point of the icon which will correspond to marker's location
+        popupAnchor: [0, -32]        // Point from which the popup should open relative to the iconAnchor
+    });
+
+    // Add the orange-tinted circle around Chandigarh University
+    circle = L.circle([30.7693, 76.5754], {
+        color: 'orange',       // Outline color
+        fillColor: '#FFA500',  // Light orange fill
+        fillOpacity: 0.1,      // Opacity for the tint
+        radius: 15000          // Radius in meters (15 km)
+    }).addTo(map);
+
+    // Function to fetch and lock on the user's location
+    function locateUser() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+
+                // Center the map on the user's location
+                map.setView([lat, lng], 13);
+
+                // Add or update the user's location marker with the custom icon
+                if (userLocationMarker) {
+                    userLocationMarker.setLatLng([lat, lng]);
+                } else {
+                    userLocationMarker = L.marker([lat, lng], {
+                        icon: userIcon,
+                        interactive: false  // Make it non-interactive
+                    }).addTo(map);
+                }
+
+                // Bind and open the popup for 5 seconds
+                userLocationMarker.bindPopup("Current Location").openPopup();
+                setTimeout(function () {
+                    userLocationMarker.closePopup();
+                }, 5000);
+
+                // Update the form fields with the user's coordinates
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            }, function (error) {
+                console.error("Error getting location: ", error);
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Call the function to fetch and lock on user location when page loads
+    locateUser();
+
+    // Add click event to manually set a marker
+    map.on('click', function (e) {
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+
+        // Calculate the distance from the center of the circle
+        var distance = map.distance([30.7693, 76.5754], [lat, lng]);
+
+        // Show the log message if the clicked location is outside the circle
+        if (distance > 15000) {
+            showLogMessage();
+        } else {
+            // Remove the previous selected location marker if it exists
+            if (selectedLocationMarker) {
+                map.removeLayer(selectedLocationMarker);
+            }
+
+            // Add the custom marker at the clicked location
+            selectedLocationMarker = L.marker(e.latlng, { icon: selectedIcon }).addTo(map)
+                .bindPopup("Selected Location").openPopup();
+
+            // Set the coordinates in the form
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+        }
+    });
+
+    // Function to show the log message modal
+    function showLogMessage() {
+        var logModal = document.getElementById('logMessageModal');
+        logModal.style.display = 'block';
+    }
+
+    // Function to close the log message modal
+    function closeLogMessage() {
+        var logModal = document.getElementById('logMessageModal');
+        logModal.style.display = 'none';
+    }
+        // Handle form submission
+        document.getElementById('flatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            fetch('save_flat.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                window.location.reload(); // Reload the page after successful submission
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Show/hide furnished options based on selection
+        document.querySelectorAll('input[name="furnsihed"]').forEach(function(elem) {
+            elem.addEventListener('change', function() {
+                document.querySelector('.furnsihed-options').style.display = this.value === 'yes' ? 'block' : 'none';
+            });
+        });
+
+        // Show/hide maintenance charge input based on selection
+   document.querySelectorAll('input[name="maintainance_option"]').forEach(function(elem) {
+    elem.addEventListener('change', function() {
+        const maintainanceChargeInput = document.getElementById('maintainance_charge');
+
+        if (this.value === 'specify_charge') {
+            maintainanceChargeInput.style.display = 'inline';
+            maintainanceChargeInput.required = true;  // Make it required when specifying charge
+            maintainanceChargeInput.value = ''; // Clear value for user input
+        } else {
+            maintainanceChargeInput.style.display = 'none';
+            maintainanceChargeInput.required = false;  // Make it not required when there's no charge
+            maintainanceChargeInput.value = 0; // Set value to 0 for No Maintenance Charge
+        }
+    });
+});
+
+ document.querySelectorAll('input[name="maintainance_option2"]').forEach(function(elem) {
+    elem.addEventListener('change', function() {
+        const maintainanceChargeInput = document.getElementById('maintainance_charge2');
+
+        if (this.value === 'specify_charge2') {
+            maintainanceChargeInput.style.display = 'inline';
+            maintainanceChargeInput.required = true;  // Make it required when specifying charge
+            maintainanceChargeInput.value = ''; // Clear value for user input
+        } else {
+            maintainanceChargeInput.style.display = 'none';
+            maintainanceChargeInput.required = false;  // Make it not required when there's no charge
+            maintainanceChargeInput.value = 0; // Set value to 0 for No Maintenance Charge
+        }
+    });
+});
+
+  document.querySelectorAll('input[name="securitydeposit_option"]').forEach(function(elem) {
+        elem.addEventListener('change', function() {
+            const securityDepositInput = document.getElementById('securitydeposit');
+            if (this.value === 'yes') {
+                securityDepositInput.style.display = 'inline';
+                securityDepositInput.required = true;
+            } else {
+                securityDepositInput.style.display = 'none';
+                securityDepositInput.required = false;
+            }
+        });
+    });
+
+    // Handle showing/hiding of the Electricity Bill input
+    document.querySelectorAll('input[name="electricitybill_option"]').forEach(function(elem) {
+        elem.addEventListener('change', function() {
+            const electricityBillInput = document.getElementById('electricitybill');
+            if (this.value === 'yes') {
+                electricityBillInput.style.display = 'inline';
+                electricityBillInput.required = true;
+            } else {
+                electricityBillInput.style.display = 'none';
+                electricityBillInput.required = false;
+            }
+        });
+    });
+
+    // Handle showing/hiding of the Water Bill input
+    document.querySelectorAll('input[name="waterbill_option"]').forEach(function(elem) {
+        elem.addEventListener('change', function() {
+            const waterBillInput = document.getElementById('waterbill');
+            if (this.value === 'yes') {
+                waterBillInput.style.display = 'flex';
+                waterBillInput.required = true;
+            } else {
+                waterBillInput.style.display = 'none';
+                waterBillInput.required = false;
+            }
+        });
+    });
+
+
+    </script>
+</body>
+</html>

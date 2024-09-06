@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listed Products</title>
+      <link rel="icon" href="cu.png" type="image/png">
+    <script>
+    // Function to fetch data using AJAX
+    function fetchData() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("data-container").innerHTML = this.responseText;
+            }
+        };
+        xhr.open("GET", "sell.php", true);
+        xhr.send();
+    }
+    
+    // Call fetchData() when the page loads
+    window.onload = function() {
+        fetchData();
+    };
+    </script>
+</head>
+<body>
+    <h2>Listed Products</h2>
+    <div id="data-container">
+        <!-- Data will be populated here dynamically -->
+    </div>
+</body>
+</html>
